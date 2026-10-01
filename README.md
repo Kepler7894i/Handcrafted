@@ -53,46 +53,15 @@ If Terrarium (the rights holder) wants this changed, e.g. wants the installer re
 
 ## Why this is a standalone repository and not a fork
 
-This project began as a fork of the original, but I recreated it as a **standalone repository** on purpose:
+I wish to give credit where due, and would happily contribute back to the original codebase if asked, but this project is created as a **standalone repository** on purpose:
 - **No artwork in the history.** A GitHub fork carries the *entire* history and every branch of the original, which includes all of the
   all-rights-reserved artwork. A fork would therefore keep redistributing it from my account even though my own code does not. A standalone repository
   starts from a clean tree that contains only what the licence lets me publish.
 - **Clear ownership.** The code here is a port with a new build system (Architectury replaced by Fabric Loom and ModDevGradle) and 26.x APIs, so it has
-  diverged completely from the original branches. It is not meant to be merged back, and a fork would wrongly suggest it is an official branch of the project.
+  diverged completely from the original branches. It is not meant to be merged back, a) it would not function, and b) a fork would wrongly suggest
+  intention to use unlicensed components of that project.
 - **No accidental upstream actions.** Forks are tied to the original network (pull requests, notifications, CI workflows). A standalone repository can’t
   accidentally send anything to, or run anything on behalf of, the original project.
 
 Credit is still given where it is due: see the top of this README, the copyright lines in [LICENSE](LICENSE), and the original source at
 <https://github.com/terrarium-earth/Handcrafted>.
-
----
-
-## Original README
-
-# Handcrafted
-
-To add this library to your project, do the following:
-
-Kotlin DSL:
-```kotlin
-repositories {
-    maven(url = "https://maven.teamresourceful.com/repository/maven-public/")
-}
-
-dependencies {
-    modImplementation(group = "earth.terrarium.handcrafted", name = "handcrafted-$modLoader-$minecraftVersion", version = handcraftedVersion)
-}
-```
-
-Groovy DSL:
-```groovy
-repositories {
-    maven {
-        url "https://maven.teamresourceful.com/repository/maven-public/"
-    }
-}
-
-dependencies {
-    modImplementation group: "earth.terrarium.handcrafted", name: "handcrafted-$modLoader-$minecraftVersion", version: handcraftedVersion
-}
-```
