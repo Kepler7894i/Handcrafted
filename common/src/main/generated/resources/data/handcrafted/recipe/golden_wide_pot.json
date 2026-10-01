@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:gold_block",
+    "handcrafted:terracotta_wide_pot"
+  ],
+  "result": {
+    "count": 1,
+    "id": "handcrafted:golden_wide_pot"
+  }
+}

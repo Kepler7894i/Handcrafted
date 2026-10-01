@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "minecraft:cherry_planks",
+    "/": "#handcrafted:cushions",
+    "@": "#minecraft:wool"
+  },
+  "pattern": [
+    "@/@",
+    "###"
+  ],
+  "result": {
+    "count": 2,
+    "id": "handcrafted:cherry_couch"
+  }
+}

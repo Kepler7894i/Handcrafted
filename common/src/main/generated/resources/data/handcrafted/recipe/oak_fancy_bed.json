@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "minecraft:oak_planks",
+    "$": "#minecraft:wool",
+    "/": "#handcrafted:cushions",
+    "@": "#handcrafted:sheets"
+  },
+  "pattern": [
+    " /@",
+    "#$$",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "handcrafted:oak_fancy_bed"
+  }
+}

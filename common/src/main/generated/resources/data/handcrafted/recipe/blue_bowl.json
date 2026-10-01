@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:blue_dye",
+    "handcrafted:terracotta_bowl"
+  ],
+  "result": {
+    "count": 1,
+    "id": "handcrafted:blue_bowl"
+  }
+}

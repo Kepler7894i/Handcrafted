@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "minecraft:iron_bars",
+    "/": "handcrafted:kitchen_hood_pipe"
+  },
+  "pattern": [
+    " / ",
+    "###",
+    "   "
+  ],
+  "result": {
+    "count": 1,
+    "id": "handcrafted:kitchen_hood"
+  }
+}

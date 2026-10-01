@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "minecraft:acacia_planks",
+    "/": "#handcrafted:chests"
+  },
+  "pattern": [
+    "###",
+    "#/#",
+    "###"
+  ],
+  "result": {
+    "count": 3,
+    "id": "handcrafted:acacia_cupboard"
+  }
+}

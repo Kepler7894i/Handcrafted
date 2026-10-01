@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "handcrafted:terracotta_cup",
+    "handcrafted:terracotta_plate"
+  ],
+  "result": {
+    "count": 1,
+    "id": "handcrafted:terracotta_crockery_combo"
+  }
+}

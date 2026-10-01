@@ -1,0 +1,5 @@
+- Fixed oven crash (sshcrack)
+- Fix table UV (Khazoda)
+- Fix chair dismounting (jshipley)
+- Improve furniture interactions (jshipley)
+- Add turkish localization (RuyaSavascisi)
