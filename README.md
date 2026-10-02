@@ -15,6 +15,8 @@ Not affiliated with or endorsed by Terrarium.
 
 ## Download and install
 
+Current target: **Minecraft 26.2**, mod version **5.0.0**.
+
 Prebuilt jars are on the [Releases page](../../releases): `handcrafted-fabric-26.2-*.jar` and `handcrafted-neoforge-26.2-*.jar`.
 You also need [ResourcefulLib](https://www.curseforge.com/minecraft/mc-mods/resourceful-lib) (and Fabric API on Fabric); the install scripts below fetch both for you.
 
