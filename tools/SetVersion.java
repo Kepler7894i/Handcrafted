@@ -72,7 +72,7 @@ public class SetVersion {
             System.out.println("(dry run, nothing written)");
         } else {
             Files.writeString(props, text, StandardCharsets.UTF_8);
-            System.out.println("gradle.properties updated. Now build (./gradlew build) and port any code the new Minecraft version broke.");
+            System.out.println("gradle.properties updated. Run `java tools/RenderReadme.java` to refresh README.md, then build (./gradlew build) and port any code the new Minecraft version broke.");
         }
     }
 

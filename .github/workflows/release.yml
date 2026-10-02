@@ -41,6 +41,19 @@ jobs:
           distribution: temurin
           java-version: 25
 
+      # README.md is generated from README.template.md ({{minecraftVersion}} etc. come from gradle.properties).
+      # If the rendered result differs from what is committed, commit it (a GITHUB_TOKEN push does not re-trigger this workflow).
+      - name: Render README
+        run: |
+          java tools/RenderReadme.java
+          if ! git diff --quiet -- README.md; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add README.md
+            git commit -m "Render README for Minecraft ${{ steps.v.outputs.mc }} [skip ci]"
+            git push origin HEAD:main || { git pull --rebase origin main && git push origin HEAD:main; }
+          fi
+
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build (code only)
@@ -65,13 +78,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          sha="$(git rev-parse HEAD)"
           mc="${{ steps.v.outputs.mc }}"
           ver="${{ steps.v.outputs.ver }}"
           rlib="${{ steps.v.outputs.rlib }}"
           if [ "${{ steps.build.outcome }}" = "success" ]; then
-            status="Built from commit ${GITHUB_SHA}."
+            status="Built from commit ${sha}."
           else
-            status="The build failed for commit ${GITHUB_SHA}, so only the source snapshot and scripts are attached."
+            status="The build failed for commit ${sha}, so only the source snapshot and scripts are attached."
           fi
           cat > notes.md <<'NOTES'
           Handcrafted for **Minecraft @MC@**, recreated from [terrarium-earth/Handcrafted](https://github.com/terrarium-earth/Handcrafted) (no longer maintained).
@@ -92,4 +106,4 @@ jobs:
           sed -i -e 's/^          //' -e "s|@MC@|$mc|g" -e "s|@VER@|$ver|g" -e "s|@RLIB@|$rlib|g" -e "s|@STATUS@|$status|g" notes.md
           # Replace the previous release/tag for this Minecraft version with the current state.
           gh release delete "$mc" --cleanup-tag --yes 2>/dev/null || true
-          gh release create "$mc" out/* --target "$GITHUB_SHA" --title "Handcrafted $mc" --notes-file notes.md
+          gh release create "$mc" out/* --target "$sha" --title "Handcrafted $mc" --notes-file notes.md
