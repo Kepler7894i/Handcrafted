@@ -88,11 +88,11 @@ for pattern in "handcrafted-$loader-" "resourcefullib-$loader-"; do
   for old in "$mods_dir"/"$pattern"*.jar; do
     [ -e "$old" ] || continue
     echo "Removing $(basename "$old")"
-    rm -f "$old"
+    rm -f "$old" || { echo "Cannot replace $(basename "$old"): is Minecraft (or a server) running with it loaded, or is the folder read-only? Close it and re-run." >&2; exit 1; }
   done
 done
-cp "$tmp/$mod_name" "$mods_dir/$mod_name"; echo "Installed $mod_name"
-cp "$tmp/$rlib_name" "$mods_dir/$rlib_name"; echo "Installed $rlib_name"
+cp "$tmp/$mod_name" "$mods_dir/$mod_name" || { echo "Cannot write to $mods_dir" >&2; exit 1; }; echo "Installed $mod_name"
+cp "$tmp/$rlib_name" "$mods_dir/$rlib_name" || { echo "Cannot write to $mods_dir" >&2; exit 1; }; echo "Installed $rlib_name"
 
 echo
 echo "Done. Mods folder: $mods_dir"

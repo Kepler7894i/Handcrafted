@@ -104,9 +104,10 @@ $toInstall = @(
 )
 foreach ($item in $toInstall) {
     Get-ChildItem $ModsDir -Filter "$($item.Pattern).jar" | ForEach-Object {
-        Write-Host "Removing $($_.Name)"
-        try { Remove-Item $_.FullName -Force -ErrorAction Stop }
-        catch { throw "Cannot replace $($_.Name): is Minecraft (or a server) running with it loaded? Close it and re-run." }
+        $old = $_
+        Write-Host "Removing $($old.Name)"
+        try { Remove-Item $old.FullName -Force -ErrorAction Stop }
+        catch { throw "Cannot replace $($old.Name): is Minecraft (or a server) running with it loaded? Close it and re-run." }
     }
     Copy-Item $item.Path (Join-Path $ModsDir $item.Name) -Force
     Write-Host "Installed $($item.Name)"
