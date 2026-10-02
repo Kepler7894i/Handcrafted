@@ -1,10 +1,10 @@
 <!-- GENERATED FILE: edit README.template.md instead (see tools/RenderReadme.java). -->
-# Handcrafted (Minecraft 26.2 port)
+# Handcrafted (Minecraft 26.3 port)
 
 This is an updated copy of **Handcrafted**, the furniture mod by Terrarium
 (original source: <https://github.com/terrarium-earth/Handcrafted>, CurseForge: <https://www.curseforge.com/minecraft/mc-mods/handcrafted>).
 The original mod stopped being updated and no longer works on current Minecraft, so this repository
-recreates it for **Minecraft 26.2** on **Fabric** and **NeoForge**. All credit for the mod, its design and its
+recreates it for **Minecraft 26.3** on **Fabric** and **NeoForge**. All credit for the mod, its design and its
 assets goes to the original authors; this repository only ports the code and build to the new game version.
 
 Not affiliated with or endorsed by Terrarium.
@@ -15,9 +15,9 @@ Not affiliated with or endorsed by Terrarium.
 
 ## Download and install
 
-Current target: **Minecraft 26.2**, mod version **5.0.0**.
+Current target: **Minecraft 26.3**, mod version **5.0.0**.
 
-Prebuilt jars are on the [Releases page](../../releases): `handcrafted-fabric-26.2-*.jar` and `handcrafted-neoforge-26.2-*.jar`.
+Prebuilt jars are on the [Releases page](../../releases): `handcrafted-fabric-26.3-*.jar` and `handcrafted-neoforge-26.3-*.jar`.
 You also need [ResourcefulLib](https://www.curseforge.com/minecraft/mc-mods/resourceful-lib) (and Fabric API on Fabric); the install scripts below fetch both for you.
 
 **The jars contain only code and data. They do not contain the mod’s textures, models, sounds or language files**, because that
@@ -33,7 +33,7 @@ Or simply run the [install script](#install-scripts) for your OS, which does thi
 (Download `AssetInstaller.java` from the `tools` folder of this repository.) It downloads the original Handcrafted 1.21.1 jar
 from Modrinth to your own computer (checksum-verified, cached in `~/.cache/handcrafted-assets`), converts its artwork to the
 format of the target Minecraft version and adds it to your Handcrafted jar. It also copies one texture (the skeleton trophy’s bow) from your own
-Minecraft 26.2 install; pass `--mc-jar <path to the Minecraft jar>` if it is not in the default `.minecraft` folder. Re-run it after
+Minecraft 26.3 install; pass `--mc-jar <path to the Minecraft jar>` if it is not in the default `.minecraft` folder. Re-run it after
 updating the jar.
 
 ## Install scripts
