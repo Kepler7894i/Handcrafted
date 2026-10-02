@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Installs Handcrafted (and its ResourcefulLib dependency) into a Minecraft mods folder. macOS version;
-# see install.ps1 (Windows) and install.sh (Linux).
+# see install-windows.ps1 (Windows) and install-linux.sh (Linux).
 #
-# Usage: ./install.sh [--mods-dir DIR] [--loader fabric|neoforge] [--skip-build] [--mc-jar PATH]
+# Usage: ./install-macos.sh [--mods-dir DIR] [--loader fabric|neoforge] [--skip-build] [--mc-jar PATH]
 #
 # Where the jar comes from:
 #   - run from a repository checkout (gradlew next to this script): the mod is compiled (code only);

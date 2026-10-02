@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
   Installs Handcrafted (and its ResourcefulLib dependency) into a Minecraft mods folder. Windows version;
-  see install.sh (Linux) and install-macos.sh (macOS).
+  see install-linux.sh (Linux) and install-macos.sh (macOS).
 
 .DESCRIPTION
   Where the jar comes from:
@@ -27,8 +27,8 @@
   Path to the Minecraft jar (e.g. ...\versions\26.2\26.2.jar). Only needed if it is not in the default .minecraft folder.
 
 .EXAMPLE
-  .\install.ps1
-  .\install.ps1 -ModsDir "D:\games\mc\mods" -Loader neoforge
+  .\install-windows.ps1
+  .\install-windows.ps1 -ModsDir "D:\games\mc\mods" -Loader neoforge
 #>
 param(
     [string]$ModsDir = (Join-Path $env:APPDATA ".minecraft\mods"),

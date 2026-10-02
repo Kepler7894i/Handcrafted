@@ -21,13 +21,67 @@ artwork is All Rights Reserved by the original authors and cannot be redistribut
 java tools/AssetInstaller.java <path to the handcrafted jar, or your mods folder>
 ```
 
-(or simply run the install script for your OS, which does this for you)
+Or simply run the [install script](#install-scripts) for your OS, which does this for you.
 
 (Download `AssetInstaller.java` from the `tools` folder of this repository.) It downloads the original Handcrafted 1.21.1 jar
 from Modrinth to your own computer (checksum-verified, cached in `~/.cache/handcrafted-assets`), converts its artwork to the
 Minecraft 26.x format and adds it to your Handcrafted jar. It also copies one texture (the skeleton trophy’s bow) from your own
 Minecraft 26.2 install; pass `--mc-jar <path to 26.2.jar>` if it is not in the default `.minecraft` folder. Re-run it after
 updating the jar.
+
+## Install scripts
+
+The easiest way to install is the script for your OS. Each one installs **both Handcrafted and its required dependency, ResourcefulLib**
+(downloaded from the Terrarium Maven for the right Minecraft version), into your `mods` folder and adds the artwork (see "Licensing" below).
+They replace any older `handcrafted-<loader>-*.jar` and `resourcefullib-<loader>-*.jar` already in that folder, and never touch Fabric Loader, Fabric API or NeoForge.
+
+| OS | Script |
+| --- | --- |
+| Windows (PowerShell) | `install-windows.ps1` |
+| Linux | `install-linux.sh` |
+| macOS | `install-macos.sh` |
+
+They need Java 25+ on your `PATH` (the same Java Minecraft 26.x uses). The Linux and macOS scripts also need `bash` and `curl`.
+
+**Where the mod jar comes from.** If the script sits in a repository checkout (next to `gradlew`) it **compiles the mod first**
+(code only, via `./gradlew :<loader>:build -PcodeOnly`). If it sits in a folder with a release jar (`handcrafted-<loader>-*.jar`) and `AssetInstaller.java`,
+it **uses that jar**, so you can download a release's jar and script into one folder and run it there.
+
+### Options
+
+| Purpose | Windows (`install-windows.ps1`) | Linux / macOS (`install-linux.sh`, `install-macos.sh`) | Default |
+| --- | --- | --- | --- |
+| Folder to install into | `-ModsDir "<folder>"` | `--mods-dir <folder>` | Windows `%APPDATA%\.minecraft\mods`; Linux `~/.minecraft/mods`; macOS `~/Library/Application Support/minecraft/mods` |
+| Mod loader to install | `-Loader fabric` or `-Loader neoforge` | `--loader fabric` or `--loader neoforge` | `fabric` |
+| Don't compile, use the jar already built in `<loader>/build/libs` | `-SkipBuild` | `--skip-build` | compile when run from a checkout |
+| Minecraft jar to take the skeleton-trophy bow texture from | `-McJar "<path to 26.2 jar>"` | `--mc-jar <path>` | auto-detected in your `.minecraft/versions` folder |
+| Show help | `Get-Help .\install-windows.ps1 -Full` | `--help` | |
+
+Examples:
+
+```powershell
+.\install-windows.ps1                                   # Fabric, into %APPDATA%\.minecraft\mods
+.\install-windows.ps1 -Loader neoforge -ModsDir "D:\mc\mods"
+```
+
+```bash
+./install-linux.sh                                      # Fabric, into ~/.minecraft/mods
+./install-linux.sh --loader neoforge --mods-dir /srv/minecraft/mods --skip-build
+```
+
+Close Minecraft (and any server using the folder) first; Windows won't let a running game's jar be replaced.
+
+### Using the asset installer directly
+
+The scripts call `tools/AssetInstaller.java` for you. You can also run it yourself on an existing code-only jar (or a folder containing
+`handcrafted-fabric-*.jar` / `handcrafted-neoforge-*.jar`); it modifies the jar(s) in place:
+
+```
+java tools/AssetInstaller.java <handcrafted jar, or a folder containing them> [--original <original-handcrafted-1.21.1.jar>] [--mc-jar <26.2 jar>]
+```
+
+- `--original`: use this copy of the original Handcrafted 1.21.1 jar instead of downloading it from Modrinth (it is otherwise downloaded, checksum-verified, and cached in `~/.cache/handcrafted-assets`).
+- `--mc-jar`: Minecraft jar to copy the bow texture from; otherwise your `.minecraft/versions` folders are searched.
 
 ## Releases and old Minecraft versions
 
@@ -40,7 +94,6 @@ build for an older Minecraft version from its tag.
 
 `./gradlew build` (Gradle downloads the required JDK 25 automatically). Jars end up in `fabric/build/libs` and `neoforge/build/libs`.
 A clone has no artwork, so the jars it builds are code-only; run the asset installer on them as described above. (`-PcodeOnly` forces a code-only build even if you have the artwork locally.)
-`install.ps1` (Windows), `install.sh` (Linux) and `install-macos.sh` (macOS) build the mod, install it plus ResourcefulLib into your `.minecraft/mods` folder and add the artwork with the asset installer (`-ModsDir` / `--mods-dir` selects another folder, `-Loader` / `--loader neoforge` selects NeoForge).
 
 ## Licensing, and why this works the way it does
 
