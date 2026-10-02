@@ -44,7 +44,7 @@ jobs:
       - name: Build (code only)
         id: build
         continue-on-error: true
-        run: ./gradlew build -PcodeOnly --no-daemon --console=plain
+        run: chmod +x gradlew && ./gradlew build -PcodeOnly --no-daemon --console=plain
 
       - name: Collect files
         run: |
