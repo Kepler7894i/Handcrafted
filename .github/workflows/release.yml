@@ -51,7 +51,7 @@ jobs:
           mkdir -p out
           git archive --format=zip --prefix="handcrafted-${{ steps.v.outputs.mc }}-source/" \
             -o "out/handcrafted-${{ steps.v.outputs.mc }}-source.zip" HEAD
-          cp tools/AssetInstaller.java out/
+          cp tools/AssetInstaller.java install.ps1 install.sh install-macos.sh out/
           if [ "${{ steps.build.outcome }}" = "success" ]; then
             cp fabric/build/libs/handcrafted-fabric-*.jar out/ || true
             cp neoforge/build/libs/handcrafted-neoforge-*.jar out/ || true
@@ -63,25 +63,30 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag="${{ steps.v.outputs.mc }}"
+          mc="${{ steps.v.outputs.mc }}"
+          ver="${{ steps.v.outputs.ver }}"
           if [ "${{ steps.build.outcome }}" = "success" ]; then
-            status="Built jars (code only) are attached."
+            status="Built from commit ${GITHUB_SHA}."
           else
-            status="The build failed for this commit, so only the source snapshot is attached."
+            status="The build failed for commit ${GITHUB_SHA}, so only the source snapshot and scripts are attached."
           fi
-          cat > notes.md <<NOTES
-          Handcrafted for **Minecraft ${{ steps.v.outputs.mc }}** (mod version ${{ steps.v.outputs.ver }}), built from commit ${GITHUB_SHA}.
+          cat > notes.md <<'NOTES'
+          Handcrafted for **Minecraft @MC@**, recreated from [terrarium-earth/Handcrafted](https://github.com/terrarium-earth/Handcrafted) (no longer maintained).
 
-          ${status}
+          **Files**
+          - `handcrafted-fabric-@MC@-@VER@.jar`: Fabric (needs Fabric API and ResourcefulLib 5.x)
+          - `handcrafted-neoforge-@MC@-@VER@.jar`: NeoForge (needs ResourcefulLib 5.x)
+          - `install.ps1`, `install.sh`, `install-macos.sh`: installers for Windows, Linux and macOS
+          - `AssetInstaller.java`: adds the artwork, used by the installers (see below)
+          - `handcrafted-@MC@-source.zip`: the exact source for this Minecraft version
 
-          - \`handcrafted-<loader>-${{ steps.v.outputs.mc }}-*.jar\`: the mod (needs ResourcefulLib; Fabric API on Fabric)
-          - \`handcrafted-${{ steps.v.outputs.mc }}-source.zip\`: the exact source for this Minecraft version
-          - \`AssetInstaller.java\`: adds the artwork (not included for licensing reasons; see the README)
+          **Artwork is not included.** The textures, models, sounds and language files are All Rights Reserved by the original authors, so these jars contain only code and data (see the README for details). To install, run once (Java 25+):
 
-          This release is updated by every push to main while main targets Minecraft ${{ steps.v.outputs.mc }}.
+          Run `install.ps1` (Windows), `./install.sh` (Linux) or `./install-macos.sh` (macOS), from the folder containing the jar and `AssetInstaller.java`. It installs the mod and ResourcefulLib into your Minecraft `mods` folder and adds the artwork (add `--loader neoforge` / `-Loader neoforge` for NeoForge). From a repository checkout it compiles the mod first. The output can be pointed at a different folder with `-ModsDir "<folder>"` (install.ps1) or `--mods-dir <folder>` (install.sh, install-macos.sh).
+
+          @STATUS@ This release is updated by every push to main while main targets Minecraft @MC@.
           NOTES
-          sed -i 's/^          //' notes.md
+          sed -i -e 's/^          //' -e "s|@MC@|$mc|g" -e "s|@VER@|$ver|g" -e "s|@STATUS@|$status|g" notes.md
           # Replace the previous release/tag for this Minecraft version with the current state.
-          gh release delete "$tag" --cleanup-tag --yes 2>/dev/null || true
-          gh release create "$tag" out/* --target "$GITHUB_SHA" \
-            --title "Handcrafted ${{ steps.v.outputs.mc }}" --notes-file notes.md
+          gh release delete "$mc" --cleanup-tag --yes 2>/dev/null || true
+          gh release create "$mc" out/* --target "$GITHUB_SHA" --title "Handcrafted $mc" --notes-file notes.md

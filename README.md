@@ -21,6 +21,8 @@ artwork is All Rights Reserved by the original authors and cannot be redistribut
 java tools/AssetInstaller.java <path to the handcrafted jar, or your mods folder>
 ```
 
+(or simply run the install script for your OS, which does this for you)
+
 (Download `AssetInstaller.java` from the `tools` folder of this repository.) It downloads the original Handcrafted 1.21.1 jar
 from Modrinth to your own computer (checksum-verified, cached in `~/.cache/handcrafted-assets`), converts its artwork to the
 Minecraft 26.x format and adds it to your Handcrafted jar. It also copies one texture (the skeleton trophy’s bow) from your own
@@ -38,7 +40,7 @@ build for an older Minecraft version from its tag.
 
 `./gradlew build` (Gradle downloads the required JDK 25 automatically). Jars end up in `fabric/build/libs` and `neoforge/build/libs`.
 A clone has no artwork, so the jars it builds are code-only; run the asset installer on them as described above. (`-PcodeOnly` forces a code-only build even if you have the artwork locally.)
-On Windows, `install-fabric.ps1` builds and installs the Fabric version plus ResourcefulLib into a mods folder.
+`install.ps1` (Windows), `install.sh` (Linux) and `install-macos.sh` (macOS) build the mod, install it plus ResourcefulLib into your `.minecraft/mods` folder and add the artwork with the asset installer (`-ModsDir` / `--mods-dir` selects another folder, `-Loader` / `--loader neoforge` selects NeoForge).
 
 ## Licensing, and why this works the way it does
 
