@@ -36,7 +36,9 @@ tasks.processResources {
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     inputs.property("version", project.version)
+    inputs.property("minecraft_version", minecraftVersion)
+    inputs.property("resourceful_lib_version", resourcefulLibVersion)
     filesMatching("META-INF/neoforge.mods.toml") {
-        expand("version" to project.version)
+        expand("version" to project.version, "minecraft_version" to minecraftVersion, "resourceful_lib_version" to resourcefulLibVersion)
     }
 }

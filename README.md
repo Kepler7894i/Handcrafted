@@ -1,21 +1,25 @@
-# Handcrafted (Minecraft 26.2 port)
+# Handcrafted (Minecraft [version] port)
 
 This is an updated copy of **Handcrafted**, the furniture mod by Terrarium
 (original source: <https://github.com/terrarium-earth/Handcrafted>, CurseForge: <https://www.curseforge.com/minecraft/mc-mods/handcrafted>).
 The original mod stopped being updated and no longer works on current Minecraft, so this repository
-recreates it for **Minecraft 26.2** on **Fabric** and **NeoForge**. All credit for the mod, its design and its
+recreates it for **Minecraft [version]** on **Fabric** and **NeoForge**. All credit for the mod, its design and its
 assets goes to the original authors; this repository only ports the code and build to the new game version.
 
 Not affiliated with or endorsed by Terrarium.
 
+> **`[version]`** in this README stands for the Minecraft version this branch targets. It is set in one place (`minecraftVersion` in
+> [gradle.properties](gradle.properties)) and everything is built and named from it: jar names (`handcrafted-<loader>-[version]-<mod version>.jar`),
+> the mod metadata, release tags and release notes. See [Targeting another Minecraft version](#targeting-another-minecraft-version).
+
 ## Download and install
 
-Prebuilt jars are on the [Releases page](../../releases): `handcrafted-fabric-26.2-*.jar` and `handcrafted-neoforge-26.2-*.jar`.
-You also need [ResourcefulLib](https://www.curseforge.com/minecraft/mc-mods/resourceful-lib) 5.x (and Fabric API on Fabric).
+Prebuilt jars are on the [Releases page](../../releases): `handcrafted-fabric-[version]-*.jar` and `handcrafted-neoforge-[version]-*.jar`.
+You also need [ResourcefulLib](https://www.curseforge.com/minecraft/mc-mods/resourceful-lib) (and Fabric API on Fabric); the install scripts below fetch both for you.
 
 **The jars contain only code and data. They do not contain the mod’s textures, models, sounds or language files**, because that
 artwork is All Rights Reserved by the original authors and cannot be redistributed here. Instead, after placing the jar in your
-`mods` folder, run the asset installer once (needs Java 25 or newer, which Minecraft 26.x already requires):
+`mods` folder, run the asset installer once (needs the Java version Minecraft requires, currently Java 25 or newer):
 
 ```
 java tools/AssetInstaller.java <path to the handcrafted jar, or your mods folder>
@@ -25,15 +29,17 @@ Or simply run the [install script](#install-scripts) for your OS, which does thi
 
 (Download `AssetInstaller.java` from the `tools` folder of this repository.) It downloads the original Handcrafted 1.21.1 jar
 from Modrinth to your own computer (checksum-verified, cached in `~/.cache/handcrafted-assets`), converts its artwork to the
-Minecraft 26.x format and adds it to your Handcrafted jar. It also copies one texture (the skeleton trophy’s bow) from your own
-Minecraft 26.2 install; pass `--mc-jar <path to 26.2.jar>` if it is not in the default `.minecraft` folder. Re-run it after
+format of the target Minecraft version and adds it to your Handcrafted jar. It also copies one texture (the skeleton trophy’s bow) from your own
+Minecraft [version] install; pass `--mc-jar <path to the Minecraft jar>` if it is not in the default `.minecraft` folder. Re-run it after
 updating the jar.
 
 ## Install scripts
 
-The easiest way to install is the script for your OS. Each one installs **both Handcrafted and its required dependency, ResourcefulLib**
-(downloaded from the Terrarium Maven for the right Minecraft version), into your `mods` folder and adds the artwork (see "Licensing" below).
-They replace any older `handcrafted-<loader>-*.jar` and `resourcefullib-<loader>-*.jar` already in that folder, and never touch Fabric Loader, Fabric API or NeoForge.
+The easiest way to install is the script for your OS. Each one installs Handcrafted **and its dependencies** into your `mods` folder and adds the artwork (see "Licensing" below):
+- **ResourcefulLib**, downloaded for the right Minecraft version and loader. Always (re)installed, replacing any older copy.
+- **Fabric API** (Fabric only), downloaded **only if your `mods` folder has no `fabric-api-*.jar` yet**; an existing Fabric API is never replaced.
+
+Use `--no-deps` / `-NoDeps` to skip all dependency installs (then only Handcrafted itself is installed or replaced). Older `handcrafted-<loader>-*.jar` files are always replaced. Fabric Loader and NeoForge themselves are never touched.
 
 | OS | Script |
 | --- | --- |
@@ -41,7 +47,7 @@ They replace any older `handcrafted-<loader>-*.jar` and `resourcefullib-<loader>
 | Linux | `install-linux.sh` |
 | macOS | `install-macos.sh` |
 
-They need Java 25+ on your `PATH` (the same Java Minecraft 26.x uses). The Linux and macOS scripts also need `bash` and `curl`.
+They need Java 25+ on your `PATH` (the Java Minecraft itself uses). The Linux and macOS scripts also need `bash` and `curl`.
 
 **Where the mod jar comes from.** If the script sits in a repository checkout (next to `gradlew`) it **compiles the mod first**
 (code only, via `./gradlew :<loader>:build -PcodeOnly`). If it sits in a folder with a release jar (`handcrafted-<loader>-*.jar`) and `AssetInstaller.java`,
@@ -54,7 +60,8 @@ it **uses that jar**, so you can download a release's jar and script into one fo
 | Folder to install into | `-ModsDir "<folder>"` | `--mods-dir <folder>` | Windows `%APPDATA%\.minecraft\mods`; Linux `~/.minecraft/mods`; macOS `~/Library/Application Support/minecraft/mods` |
 | Mod loader to install | `-Loader fabric` or `-Loader neoforge` | `--loader fabric` or `--loader neoforge` | `fabric` |
 | Don't compile, use the jar already built in `<loader>/build/libs` | `-SkipBuild` | `--skip-build` | compile when run from a checkout |
-| Minecraft jar to take the skeleton-trophy bow texture from | `-McJar "<path to 26.2 jar>"` | `--mc-jar <path>` | auto-detected in your `.minecraft/versions` folder |
+| Don't install dependencies (ResourcefulLib, Fabric API) | `-NoDeps` | `--no-deps` | install them |
+| Minecraft jar to take the skeleton-trophy bow texture from | `-McJar "<path to the Minecraft jar>"` | `--mc-jar <path>` | auto-detected in your `.minecraft/versions` folder |
 | Show help | `Get-Help .\install-windows.ps1 -Full` | `--help` | |
 
 Examples:
@@ -77,18 +84,33 @@ The scripts call `tools/AssetInstaller.java` for you. You can also run it yourse
 `handcrafted-fabric-*.jar` / `handcrafted-neoforge-*.jar`); it modifies the jar(s) in place:
 
 ```
-java tools/AssetInstaller.java <handcrafted jar, or a folder containing them> [--original <original-handcrafted-1.21.1.jar>] [--mc-jar <26.2 jar>]
+java tools/AssetInstaller.java <handcrafted jar, or a folder containing them> [--original <original-handcrafted-1.21.1.jar>] [--mc-jar <Minecraft jar>] [--mc-version <mc>]
 ```
 
 - `--original`: use this copy of the original Handcrafted 1.21.1 jar instead of downloading it from Modrinth (it is otherwise downloaded, checksum-verified, and cached in `~/.cache/handcrafted-assets`).
 - `--mc-jar`: Minecraft jar to copy the bow texture from; otherwise your `.minecraft/versions` folders are searched.
+- `--mc-version`: Minecraft version the jar targets; normally read from the jar name (`handcrafted-<loader>-<mc>-<version>.jar`).
 
 ## Releases and old Minecraft versions
 
 Every push to `main` runs [.github/workflows/release.yml](.github/workflows/release.yml), which publishes a release whose tag is the Minecraft version
-(e.g. `26.2`): the code-only jars, a source snapshot (`handcrafted-<mc>-source.zip`) and the asset installer. If the build fails, the source
+(the value of `minecraftVersion`): the code-only jars, a source snapshot (`handcrafted-<mc>-source.zip`) and the asset installer. If the build fails, the source
 snapshot is still published. When `main` moves to a newer Minecraft version, the older release stays, so you can always download the latest
 build for an older Minecraft version from its tag.
+
+## Targeting another Minecraft version
+
+The target version lives only in `gradle.properties` (`minecraftVersion`, plus the matching `fabricApiVersion`, `neoforgeVersion`, `resourcefulLibVersion` and `fabricLoaderVersion`).
+The mod metadata (`fabric.mod.json`, `neoforge.mods.toml`), jar names, release tag/name/notes, the installers and the asset installer are all derived from it, nothing else hardcodes a version.
+To retarget:
+
+```
+java tools/SetVersion.java <minecraft version>            # looks up and writes the matching dependency versions
+java tools/SetVersion.java <minecraft version> --dry-run  # only shows what it would change
+```
+
+That updates `gradle.properties` only; porting the code to whatever the new Minecraft version changed is still manual. On the next push to `main`,
+the release workflow publishes a release for the new version and leaves the older versions' releases in place.
 
 ## Building
 
@@ -108,7 +130,7 @@ it still belongs to Terrarium and the original Handcrafted artists.
 
 **Why an asset installer.** A mod without its textures and models is invisible in game, so the artwork still has to get into the jar somehow.
 `tools/AssetInstaller.java` does that on *your* computer: it downloads the original mod from its official Modrinth page (which the authors
-publish for free), converts the artwork to the Minecraft 26.x format and adds it to your jar. The artwork goes from the authors’ own
+publish for free), converts the artwork to the format of the target Minecraft version and adds it to your jar. The artwork goes from the authors’ own
 download straight to you; it is never hosted or redistributed by this repository. The converted result is for your own use and should not be re-uploaded.
 
 If Terrarium (the rights holder) wants this changed, e.g. wants the installer removed or gives permission to bundle the artwork, I will do so.
@@ -119,7 +141,7 @@ I wish to give credit where due, and would happily contribute back to the origin
 - **No artwork in the history.** A GitHub fork carries the *entire* history and every branch of the original, which includes all of the
   all-rights-reserved artwork. A fork would therefore keep redistributing it from my account even though my own code does not. A standalone repository
   starts from a clean tree that contains only what the licence lets me publish.
-- **Clear ownership.** The code here is a port with a new build system (Architectury replaced by Fabric Loom and ModDevGradle) and 26.x APIs, so it has
+- **Clear ownership.** The code here is a port with a new build system (Architectury replaced by Fabric Loom and ModDevGradle) and the current Minecraft APIs, so it has
   diverged completely from the original branches. It is not meant to be merged back, a) it would not function, and b) a fork would wrongly suggest
   intention to use unlicensed components of that project.
 - **No accidental upstream actions.** Forks are tied to the original network (pull requests, notifications, CI workflows). A standalone repository can’t

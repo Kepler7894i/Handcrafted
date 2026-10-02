@@ -26,10 +26,10 @@ import java.util.zip.ZipFile;
  *
  * The artwork is All Rights Reserved by its original authors, so it is not part of this repository or its
  * releases. This tool takes it from the original Handcrafted 1.21.1 jar, which it downloads from Modrinth onto
- * your own machine, and converts it to the Minecraft 26.x format on the fly.
+ * your own machine, and converts it to the format of the Minecraft version the jar targets (read from the jar name) on the fly.
  *
  * Usage:
- *   java tools/AssetInstaller.java &lt;handcrafted jar | folder containing one or more&gt; [--original original.jar] [--mc-jar 26.2.jar]
+ *   java tools/AssetInstaller.java &lt;handcrafted jar | folder containing one or more&gt; [--original original.jar] [--mc-jar minecraft.jar] [--mc-version 1.2.3]
  *
  * The jar(s) are modified in place.
  */
@@ -38,7 +38,8 @@ public class AssetInstaller {
     private static final String PROJECT = "handcrafted";
     private static final String ORIGINAL_VERSION = "4.0.3";
     private static final String ORIGINAL_GAME_VERSION = "1.21.1";
-    private static final String MC_VERSION = "26.2";
+    /** Minecraft version the target jar was built for; read from its file name (handcrafted-<loader>-<mc>-<version>.jar) or --mc-version. */
+    private static String MC_VERSION;
     private static final String BOW_TARGET = "assets/handcrafted/textures/block/trophy/vanilla/bow.png";
 
     public static void main(String[] args) throws Exception {
@@ -49,11 +50,12 @@ public class AssetInstaller {
             switch (args[i]) {
                 case "--original" -> original = Path.of(args[++i]);
                 case "--mc-jar" -> mcJar = Path.of(args[++i]);
+                case "--mc-version" -> MC_VERSION = args[++i];
                 default -> target = Path.of(args[i]);
             }
         }
         if (target == null) {
-            System.err.println("Usage: java tools/AssetInstaller.java <handcrafted jar or mods folder> [--original original.jar] [--mc-jar " + MC_VERSION + ".jar]");
+            System.err.println("Usage: java tools/AssetInstaller.java <handcrafted jar or mods folder> [--original original.jar] [--mc-jar minecraft.jar] [--mc-version <mc>]");
             System.exit(2);
         }
 
@@ -72,6 +74,11 @@ public class AssetInstaller {
             System.exit(1);
         }
 
+        if (MC_VERSION == null) {
+            Matcher nameMatch = Pattern.compile("handcrafted-(?:fabric|neoforge)-([^-]+)-").matcher(jars.get(0).getFileName().toString());
+            if (!nameMatch.find()) throw new IOException("Cannot tell the Minecraft version from " + jars.get(0).getFileName() + "; pass --mc-version");
+            MC_VERSION = nameMatch.group(1);
+        }
         if (original == null) original = downloadOriginal();
         if (mcJar == null) mcJar = findMinecraftJar();
 
@@ -144,7 +151,7 @@ public class AssetInstaller {
         for (Path root : roots) {
             Path versions = root.resolve("versions");
             if (!Files.isDirectory(versions)) continue;
-            // Exact vanilla folder first, then modded profiles for this version (e.g. fabric-loader-x-26.2).
+            // Exact vanilla folder first, then modded profiles for this version (e.g. fabric-loader-x-<mc>).
             List<Path> jars = new ArrayList<>();
             jars.add(versions.resolve(MC_VERSION).resolve(MC_VERSION + ".jar"));
             try (Stream<Path> dirs = Files.list(versions)) {
@@ -163,7 +170,7 @@ public class AssetInstaller {
         return null;
     }
 
-    // ---------------------------------------------------------------- conversion (1.21.1 assets -> 26.x assets)
+    // ---------------------------------------------------------------- conversion (original 1.21.1 assets -> current format)
 
     private static Map<String, byte[]> convert(Path original, Path mcJar) throws IOException {
         Map<String, byte[]> out = new java.util.TreeMap<>();
