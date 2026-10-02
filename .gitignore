@@ -129,4 +129,6 @@ common/src/main/generated/resources/assets/
 common/src/main/resources/icon.png
 release/
 common/src/main/generated/resources/.cache/
-.github/workflows/
+
+# Local-only helper scripts
+install-server.local.ps1

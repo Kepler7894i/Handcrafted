@@ -1,0 +1,87 @@
+name: Release
+
+# Every push to main publishes (or refreshes) a release for the Minecraft version in gradle.properties.
+# Release tag == Minecraft version (e.g. "26.2"), so the latest release for any Minecraft version can always be
+# found and downloaded later, even after main has moved on to a newer Minecraft version.
+#   - If the project builds, the code-only jars are attached.
+#   - If it does not build (e.g. mid-port to a new Minecraft version), the release still contains the
+#     version-specific source snapshot so that state can be recovered.
+# The artwork is all-rights-reserved and is never built into the jars; see README ("Licensing").
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read versions
+        id: v
+        run: |
+          mc=$(grep -E '^minecraftVersion=' gradle.properties | cut -d= -f2 | tr -d '\r ')
+          ver=$(grep -E '^version=' gradle.properties | cut -d= -f2 | tr -d '\r ')
+          echo "mc=$mc" >> "$GITHUB_OUTPUT"
+          echo "ver=$ver" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build (code only)
+        id: build
+        continue-on-error: true
+        run: ./gradlew build -PcodeOnly --no-daemon --console=plain
+
+      - name: Collect files
+        run: |
+          mkdir -p out
+          git archive --format=zip --prefix="handcrafted-${{ steps.v.outputs.mc }}-source/" \
+            -o "out/handcrafted-${{ steps.v.outputs.mc }}-source.zip" HEAD
+          cp tools/AssetInstaller.java out/
+          if [ "${{ steps.build.outcome }}" = "success" ]; then
+            cp fabric/build/libs/handcrafted-fabric-*.jar out/ || true
+            cp neoforge/build/libs/handcrafted-neoforge-*.jar out/ || true
+            rm -f out/*-sources.jar
+          fi
+          ls -la out
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ steps.v.outputs.mc }}"
+          if [ "${{ steps.build.outcome }}" = "success" ]; then
+            status="Built jars (code only) are attached."
+          else
+            status="The build failed for this commit, so only the source snapshot is attached."
+          fi
+          cat > notes.md <<NOTES
+          Handcrafted for **Minecraft ${{ steps.v.outputs.mc }}** (mod version ${{ steps.v.outputs.ver }}), built from commit ${GITHUB_SHA}.
+
+          ${status}
+
+          - \`handcrafted-<loader>-${{ steps.v.outputs.mc }}-*.jar\`: the mod (needs ResourcefulLib; Fabric API on Fabric)
+          - \`handcrafted-${{ steps.v.outputs.mc }}-source.zip\`: the exact source for this Minecraft version
+          - \`AssetInstaller.java\`: adds the artwork (not included for licensing reasons; see the README)
+
+          This release is updated by every push to main while main targets Minecraft ${{ steps.v.outputs.mc }}.
+          NOTES
+          sed -i 's/^          //' notes.md
+          # Replace the previous release/tag for this Minecraft version with the current state.
+          gh release delete "$tag" --cleanup-tag --yes 2>/dev/null || true
+          gh release create "$tag" out/* --target "$GITHUB_SHA" \
+            --title "Handcrafted ${{ steps.v.outputs.mc }}" --notes-file notes.md

@@ -5,7 +5,7 @@ plugins {
 }
 
 configure(subprojects.filter { it.name != "common" }) {
-    // Minecraft 26.x needs Java 25; the installed JDK 26 compiles with --release 25.
+    // Minecraft 26.x needs Java 25.
     apply(plugin = "java")
 
     val minecraftVersion: String by project
@@ -26,7 +26,7 @@ configure(subprojects.filter { it.name != "common" }) {
     }
 
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(26))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(25))
         withSourcesJar()
     }
 

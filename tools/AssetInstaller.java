@@ -134,15 +134,31 @@ public class AssetInstaller {
         return HexFormat.of().formatHex(md.digest());
     }
 
+    /** Looks for a launcher version folder for this Minecraft version whose jar contains the vanilla assets. */
     private static Path findMinecraftJar() {
-        List<Path> candidates = new ArrayList<>();
+        List<Path> roots = new ArrayList<>();
         String appData = System.getenv("APPDATA");
-        if (appData != null) candidates.add(Path.of(appData, ".minecraft"));
-        candidates.add(Path.of(System.getProperty("user.home"), ".minecraft"));
-        candidates.add(Path.of(System.getProperty("user.home"), "Library", "Application Support", "minecraft"));
-        for (Path dir : candidates) {
-            Path jar = dir.resolve("versions").resolve(MC_VERSION).resolve(MC_VERSION + ".jar");
-            if (Files.exists(jar)) return jar;
+        if (appData != null) roots.add(Path.of(appData, ".minecraft"));
+        roots.add(Path.of(System.getProperty("user.home"), ".minecraft"));
+        roots.add(Path.of(System.getProperty("user.home"), "Library", "Application Support", "minecraft"));
+        for (Path root : roots) {
+            Path versions = root.resolve("versions");
+            if (!Files.isDirectory(versions)) continue;
+            // Exact vanilla folder first, then modded profiles for this version (e.g. fabric-loader-x-26.2).
+            List<Path> jars = new ArrayList<>();
+            jars.add(versions.resolve(MC_VERSION).resolve(MC_VERSION + ".jar"));
+            try (Stream<Path> dirs = Files.list(versions)) {
+                dirs.filter(d -> d.getFileName().toString().endsWith("-" + MC_VERSION))
+                    .forEach(d -> jars.add(d.resolve(d.getFileName() + ".jar")));
+            } catch (IOException ignored) {
+            }
+            for (Path jar : jars) {
+                if (!Files.exists(jar)) continue;
+                try (ZipFile zip = new ZipFile(jar.toFile())) {
+                    if (zip.getEntry("assets/minecraft/textures/item/bow.png") != null) return jar;
+                } catch (IOException ignored) {
+                }
+            }
         }
         return null;
     }

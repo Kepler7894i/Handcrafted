@@ -27,9 +27,16 @@ Minecraft 26.x format and adds it to your Handcrafted jar. It also copies one te
 Minecraft 26.2 install; pass `--mc-jar <path to 26.2.jar>` if it is not in the default `.minecraft` folder. Re-run it after
 updating the jar.
 
+## Releases and old Minecraft versions
+
+Every push to `main` runs [.github/workflows/release.yml](.github/workflows/release.yml), which publishes a release whose tag is the Minecraft version
+(e.g. `26.2`): the code-only jars, a source snapshot (`handcrafted-<mc>-source.zip`) and the asset installer. If the build fails, the source
+snapshot is still published. When `main` moves to a newer Minecraft version, the older release stays, so you can always download the latest
+build for an older Minecraft version from its tag.
+
 ## Building
 
-`./gradlew build` (needs JDK 26 and JDK 25; Gradle downloads JDK 25 automatically). Jars end up in `fabric/build/libs` and `neoforge/build/libs`.
+`./gradlew build` (Gradle downloads the required JDK 25 automatically). Jars end up in `fabric/build/libs` and `neoforge/build/libs`.
 A clone has no artwork, so the jars it builds are code-only; run the asset installer on them as described above. (`-PcodeOnly` forces a code-only build even if you have the artwork locally.)
 On Windows, `install-fabric.ps1` builds and installs the Fabric version plus ResourcefulLib into a mods folder.
 
